@@ -1,46 +1,87 @@
-use std::hint;
-
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
-use bevy::time::Stopwatch;
 
-const PLAYER_SPRITE: &str = "sprites/redbird-midflap.png";
-const SPEED: f32 = 300.;
+const PLAYER_SPEED: f32 = 3.0;
 
-#[derive(PartialEq)]
+pub struct PlayerPlugin;
+
+#[derive(Component)]
+struct Player;
+
+#[derive(Component)]
+struct AnimationIndices {
+    first: usize,
+    last: usize,
+}
+
+#[derive(Component, Deref, DerefMut)]
+struct AnimationTimer(Timer);
+
+#[derive(Component)]
+struct JumpTimer {
+    timer: Timer,
+}
+
 enum Direction {
     Up,
     Down,
 }
 
 #[derive(Component)]
-struct Player;
-
-#[derive(Component)]
-struct Movement {
+struct MovementDirection {
     direction: Direction,
 }
 
-pub struct PlayerPlugin;
-
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, render_player_system)
-            .add_systems(Update, input_system)
-            .add_systems(Update, movement_system)
-            .add_systems(Update, timer_system);
+        app.add_systems(Startup, setup)
+            .add_systems(Update, (input_system, animate_sprite_system, jump_system));
     }
 }
 
-fn render_player_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn animate_sprite_system(
+    time: Res<Time>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut TextureAtlas)>,
+) {
+    for (indices, mut timer, mut atlas) in &mut query {
+        timer.tick(time.delta());
+        if timer.just_finished() {
+            atlas.index = if atlas.index == indices.last {
+                indices.first
+            } else {
+                atlas.index + 1
+            };
+        }
+    }
+}
+
+fn setup(
+    mut commands: Commands,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    asset_server: Res<AssetServer>,
+) {
+    let texture = asset_server.load("sprites/red_bird_animation.png");
+    let layout = TextureAtlasLayout::from_grid(Vec2::new(34.0, 24.0), 3, 1, None, None);
+    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let animation_indices = AnimationIndices { first: 0, last: 2 };
+
     commands.spawn((
         Player,
-        SpriteBundle {
-            texture: asset_server.load(PLAYER_SPRITE),
-            transform: Transform::from_xyz(100., 0., 0.),
+        SpriteSheetBundle {
+            texture,
+            atlas: TextureAtlas {
+                layout: texture_atlas_layout,
+                index: animation_indices.first,
+            },
+            transform: Transform::from_scale(Vec3::splat(3.0)),
             ..default()
         },
-        Movement {
+        animation_indices,
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+        JumpTimer {
+            timer: Timer::from_seconds(0.5, TimerMode::Once),
+        },
+        MovementDirection {
             direction: Direction::Down,
         },
     ));
@@ -48,38 +89,41 @@ fn render_player_system(mut commands: Commands, asset_server: Res<AssetServer>) 
 
 fn input_system(
     mut keyboard_input_events: EventReader<KeyboardInput>,
-    mut query: Query<&mut Movement, With<Player>>,
+    mut query: Query<(&mut MovementDirection, &mut JumpTimer), With<Player>>,
 ) {
     for event in keyboard_input_events.read() {
         if event.key_code == KeyCode::Space {
-            for mut movement in query.iter_mut() {
-                movement.direction = Direction::Up;
+            for (mut movement_direction, mut jump_timer) in query.iter_mut() {
+                movement_direction.direction = Direction::Up;
+                jump_timer.timer.reset();
             }
         }
     }
 }
 
-fn timer_system(mut query: Query<&mut Movement, Changed<Movement>>) {
-    let stopwatch = Stopwatch::new();
-    while stopwatch.elapsed().as_secs() < 1 {
-        println!("time elapsed: {:?}", stopwatch.elapsed().as_secs());
-        hint::spin_loop();
-    }
-    for mut movement in query.iter_mut() {
-        movement.direction = Direction::Down;
-    }
-}
+fn jump_system(
+    time: Res<Time>,
+    mut query: Query<(&mut JumpTimer, &mut MovementDirection, &mut Transform), With<Player>>,
+) {
+    for (mut jump_timer, mut movement_direction, mut transform) in query.iter_mut() {
+        jump_timer.timer.tick(time.delta());
 
-fn movement_system(time: Res<Time>, mut query: Query<(&mut Transform, &Movement), With<Player>>) {
-    for (mut transform, movement) in query.iter_mut() {
-        match movement.direction {
+        match movement_direction.direction {
             Direction::Up => {
-                transform.translation.y += SPEED * time.delta_seconds();
+                let force: f32 = jump_timer.timer.elapsed_secs() * 10.0;
+                let velocity = (PLAYER_SPEED - force) * 150.0;
+                let formula: f32 = velocity * time.delta_seconds();
+                transform.translation.y += formula;
             }
             Direction::Down => {
-                transform.translation.y -= SPEED * time.delta_seconds();
+                let velocity = PLAYER_SPEED * 120.0;
+                let formula: f32 = velocity * time.delta_seconds();
+                transform.translation.y -= formula;
             }
         }
-        // transform.translation.y -= GRAVITY_SPEED * time.delta_seconds();
+
+        if jump_timer.timer.finished() {
+            movement_direction.direction = Direction::Down;
+        }
     }
 }

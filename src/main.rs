@@ -3,11 +3,14 @@ mod player;
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins, player::PlayerPlugin))
-        .add_systems(Startup, add_camera)
+        .add_plugins((
+            DefaultPlugins.set(ImagePlugin::default_nearest()),
+            player::PlayerPlugin,
+        ))
+        .add_systems(Startup, setup)
         .run();
 }
 
-fn add_camera(mut commands: Commands) {
+fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
