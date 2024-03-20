@@ -73,7 +73,7 @@ fn setup(
                 layout: texture_atlas_layout,
                 index: animation_indices.first,
             },
-            transform: Transform::from_scale(Vec3::splat(3.0)),
+            transform: Transform::from_scale(Vec3::splat(2.1)),
             ..default()
         },
         animation_indices,
