@@ -1,7 +1,7 @@
+use crate::constants::*;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
-
-const PLAYER_SPEED: f32 = 3.0;
+use bevy::sprite::Anchor;
 
 pub struct PlayerPlugin;
 
@@ -34,8 +34,10 @@ struct MovementDirection {
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup)
-            .add_systems(Update, (input_system, animate_sprite_system, jump_system));
+        app.add_systems(Startup, setup).add_systems(
+            Update,
+            (animate_sprite_system, input_system, jump_system).chain(),
+        );
     }
 }
 
@@ -60,20 +62,29 @@ fn setup(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     asset_server: Res<AssetServer>,
 ) {
-    let texture = asset_server.load("sprites/red_bird_animation.png");
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(34.0, 24.0), 3, 1, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+    let layout = TextureAtlasLayout::from_grid(
+        Vec2::new(PLAYER_SPRITE.x, PLAYER_SPRITE.y),
+        3,
+        1,
+        None,
+        None,
+    );
     let animation_indices = AnimationIndices { first: 0, last: 2 };
 
     commands.spawn((
         Player,
         SpriteSheetBundle {
-            texture,
+            texture: asset_server.load("sprites/red_bird_animation.png"),
             atlas: TextureAtlas {
-                layout: texture_atlas_layout,
+                layout: texture_atlas_layouts.add(layout),
                 index: animation_indices.first,
             },
-            transform: Transform::from_scale(Vec3::splat(2.1)),
+            transform: Transform::from_xyz(0.0, 0.0, 100.0),
+            sprite: Sprite {
+                custom_size: Some(PLAYER_SPRITE_DIMENSIONS),
+                anchor: Anchor::Center,
+                ..default()
+            },
             ..default()
         },
         animation_indices,

@@ -1,6 +1,7 @@
 use bevy::{prelude::*, window::WindowResolution};
 mod background;
 mod player;
+mod constants;
 
 fn main() {
     App::new()
