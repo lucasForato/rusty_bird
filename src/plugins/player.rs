@@ -5,8 +5,18 @@ use bevy::sprite::Anchor;
 
 pub struct PlayerPlugin;
 
+#[derive(Bundle)]
+struct PlayerBundle {
+    player: Player,
+    animation_indices: AnimationIndices,
+    animation_timer: AnimationTimer,
+    jump_timer: JumpTimer,
+    movement_direction: MovementDirection,
+    spritesheet: SpriteSheetBundle,
+}
+
 #[derive(Component)]
-struct Player;
+pub struct Player;
 
 #[derive(Component)]
 struct AnimationIndices {
@@ -15,21 +25,23 @@ struct AnimationIndices {
 }
 
 #[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
+struct AnimationTimer {
+    timer: Timer,
+}
 
 #[derive(Component)]
 struct JumpTimer {
     timer: Timer,
 }
 
-enum Direction {
-    Up,
-    Down,
-}
-
 #[derive(Component)]
 struct MovementDirection {
     direction: Direction,
+}
+
+enum Direction {
+    Up,
+    Down,
 }
 
 impl Plugin for PlayerPlugin {
@@ -71,9 +83,9 @@ fn setup(
     );
     let animation_indices = AnimationIndices { first: 0, last: 2 };
 
-    commands.spawn((
-        Player,
-        SpriteSheetBundle {
+    commands.spawn(PlayerBundle {
+        player: Player,
+        spritesheet: SpriteSheetBundle {
             texture: asset_server.load("sprites/red_bird_animation.png"),
             atlas: TextureAtlas {
                 layout: texture_atlas_layouts.add(layout),
@@ -88,14 +100,16 @@ fn setup(
             ..default()
         },
         animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-        JumpTimer {
+        animation_timer: AnimationTimer {
+            timer: Timer::from_seconds(0.1, TimerMode::Repeating),
+        },
+        jump_timer: JumpTimer {
             timer: Timer::from_seconds(0.5, TimerMode::Once),
         },
-        MovementDirection {
+        movement_direction: MovementDirection {
             direction: Direction::Down,
         },
-    ));
+    });
 }
 
 fn input_system(

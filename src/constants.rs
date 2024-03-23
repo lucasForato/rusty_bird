@@ -7,3 +7,5 @@ pub const PLAYER_SPRITE_DIMENSIONS: Vec2 = Vec2::new(68.0, 48.0);
 
 pub const BACKGROUND_Z: f32 = 1.0;
 pub const BASE_Z: f32 = 10.0;
+
+pub const GAME_OVER_Z: f32 = 100.0;
