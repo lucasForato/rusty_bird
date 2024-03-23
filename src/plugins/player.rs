@@ -1,7 +1,10 @@
-use crate::constants::*;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
+
+pub const PLAYER_SPEED: f32 = 3.0;
+pub const PLAYER_SPRITE: Vec3 = Vec3::new(34.0, 24.0, 100.0);
+pub const PLAYER_SPRITE_DIMENSIONS: Vec2 = Vec2::new(68.0, 48.0);
 
 pub struct PlayerPlugin;
 

@@ -1,7 +1,9 @@
-use crate::constants::*;
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
+
+pub const BACKGROUND_Z: f32 = 1.0;
+pub const BASE_Z: f32 = 10.0;
 
 pub struct BackgroundPlugin;
 

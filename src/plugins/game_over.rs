@@ -1,14 +1,14 @@
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-
-use crate::constants::GAME_OVER_Z;
 use crate::plugins::player::Player;
+
+pub const GAME_OVER_Z: f32 = 100.0;
+
+pub struct GameOverPlugin;
 
 #[derive(Event)]
 pub struct DeathEvent;
-
-pub struct GameOverPlugin;
 
 impl Plugin for GameOverPlugin {
     fn build(&self, app: &mut App) {

@@ -1,8 +1,6 @@
-use bevy::{app::PluginGroupBuilder, prelude::*, window::WindowResolution};
-
-mod constants;
-
 mod plugins;
+
+use bevy::{app::PluginGroupBuilder, prelude::*, window::WindowResolution};
 use plugins::background::BackgroundPlugin;
 use plugins::game_over::GameOverPlugin;
 use plugins::player::PlayerPlugin;
