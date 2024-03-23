@@ -2,9 +2,9 @@ mod plugins;
 
 use bevy::{app::PluginGroupBuilder, prelude::*, window::WindowResolution};
 use plugins::background::BackgroundPlugin;
+use plugins::game_over::DeathEvent;
 use plugins::game_over::GameOverPlugin;
 use plugins::player::PlayerPlugin;
-use plugins::game_over::DeathEvent;
 
 fn main() {
     App::new()
@@ -23,18 +23,14 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
 
-fn window_plugin() -> WindowPlugin {
-    WindowPlugin {
-        primary_window: Some(Window {
-            resolution: WindowResolution::new(576., 1024.).with_scale_factor_override(1.),
-            ..default()
-        }),
-        ..Default::default()
-    }
-}
-
 fn default_plugins() -> PluginGroupBuilder {
     DefaultPlugins
         .set(ImagePlugin::default_nearest())
-        .set(window_plugin())
+        .set(WindowPlugin {
+            primary_window: Some(Window {
+                resolution: WindowResolution::new(576., 1024.).with_scale_factor_override(1.),
+                ..default()
+            }),
+            ..Default::default()
+        })
 }
