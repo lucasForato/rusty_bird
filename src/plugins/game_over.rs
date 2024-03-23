@@ -2,8 +2,11 @@ use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
-use crate::background::DeathEvent;
 use crate::constants::GAME_OVER_Z;
+use crate::plugins::player::Player;
+
+#[derive(Event)]
+pub struct DeathEvent;
 
 pub struct GameOverPlugin;
 
@@ -14,7 +17,8 @@ impl Plugin for GameOverPlugin {
             game_over.run_if(|mut player_has_died: EventReader<DeathEvent>| {
                 player_has_died.read().count() > 0
             }),
-        );
+        )
+        .add_systems(Update, death_system);
     }
 }
 
@@ -29,4 +33,18 @@ fn game_over(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         ..default()
     });
+}
+
+fn death_system(
+    mut commands: Commands,
+    player: Query<(&Transform, Entity), With<Player>>,
+    mut event: EventWriter<DeathEvent>,
+) {
+    for (player_transform, entity) in player.iter() {
+        let player_position = player_transform.translation;
+        if player_position.y < -390.0 {
+            commands.entity(entity).despawn();
+            event.send(DeathEvent);
+        }
+    }
 }

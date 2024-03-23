@@ -6,6 +6,7 @@ mod plugins;
 use plugins::background::BackgroundPlugin;
 use plugins::game_over::GameOverPlugin;
 use plugins::player::PlayerPlugin;
+use plugins::game_over::DeathEvent;
 
 fn main() {
     App::new()
@@ -16,7 +17,7 @@ fn main() {
             GameOverPlugin,
         ))
         .add_systems(Startup, setup)
-        .add_event::<plugins::background::DeathEvent>()
+        .add_event::<DeathEvent>()
         .run();
 }
 
