@@ -51,8 +51,8 @@ fn ground_movement(
     mut writer: EventWriter<SpawnNewGroundEvent>,
 ) {
     for mut transform in query.iter_mut() {
-        transform.translation.x -= 300.0 * time.delta_seconds();
-        if transform.translation.x <= -958.0 {
+        transform.translation.x -= 100.0 * time.delta_seconds();
+        if transform.translation.x <= -1052.0 {
             writer.send(SpawnNewGroundEvent);
         }
     }
@@ -67,7 +67,7 @@ fn spawn_ground(
         Ground,
         SpriteBundle {
             texture: asset_server.load("sprites/base.png"),
-            transform: Transform::from_xyz(-290., -412.0, BASE_Z),
+            transform: Transform::from_xyz(-288., -412.0, BASE_Z),
             sprite: Sprite {
                 custom_size: Some(Vec2::new(672.0 * 2.0, 112.0 * 2.0)),
                 anchor: Anchor::TopLeft,
