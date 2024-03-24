@@ -5,6 +5,7 @@ use plugins::background::BackgroundPlugin;
 use plugins::game_over::DeathEvent;
 use plugins::game_over::GameOverPlugin;
 use plugins::player::PlayerPlugin;
+use plugins::pipe::PipePlugin;
 
 fn main() {
     App::new()
@@ -13,6 +14,7 @@ fn main() {
             BackgroundPlugin,
             PlayerPlugin,
             GameOverPlugin,
+            PipePlugin,
         ))
         .add_systems(Startup, setup)
         .add_event::<DeathEvent>()
