@@ -1,10 +1,9 @@
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use rand::prelude::*;
+use crate::settings::pipe::PipeSettings;
 
 pub struct PipePlugin;
-
-const PIPE_Z: f32 = 100.0;
 
 enum Surface {
     GROUND,
@@ -54,6 +53,7 @@ fn setup(mut commands: Commands, mut writer: EventWriter<SpawnNewPipeEvent>) {
 fn spawn_pipe(
     mut commands: Commands,
     mut pipe_props: EventReader<SpawnNewPipeEvent>,
+    settings: Res<PipeSettings>,
     asset_server: Res<AssetServer>,
 ) {
     for pipe_prop in pipe_props.read() {
@@ -64,7 +64,7 @@ fn spawn_pipe(
                     Pipe,
                     SpriteBundle {
                         texture: asset_server.load("sprites/pipe-green.png"),
-                        transform: Transform::from_xyz(400.0, pipe_height, PIPE_Z),
+                        transform: Transform::from_xyz(400.0, pipe_height, settings.pipe_z),
                         sprite: Sprite {
                             custom_size: Some(Vec2::new(52.0 * 2.0, 320.0 * 2.0)),
                             ..default()
@@ -79,7 +79,7 @@ fn spawn_pipe(
                     Pipe,
                     SpriteBundle {
                         texture: asset_server.load("sprites/pipe-green.png"),
-                        transform: Transform::from_xyz(400.0, pipe_height, PIPE_Z),
+                        transform: Transform::from_xyz(400.0, pipe_height, settings.pipe_z),
                         sprite: Sprite {
                             custom_size: Some(Vec2::new(52.0 * 2.0, 320.0 * 2.0)),
                             flip_y: true,

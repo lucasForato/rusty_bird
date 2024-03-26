@@ -1,8 +1,8 @@
+use crate::settings::player::PlayerSettings;
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
-pub const PLAYER_SPEED: f32 = 3.0;
 pub const PLAYER_SPRITE: Vec3 = Vec3::new(34.0, 24.0, 100.0);
 pub const PLAYER_SPRITE_DIMENSIONS: Vec2 = Vec2::new(68.0, 48.0);
 
@@ -132,6 +132,7 @@ fn input_system(
 fn jump_system(
     time: Res<Time>,
     mut query: Query<(&mut JumpTimer, &mut MovementDirection, &mut Transform), With<Player>>,
+    player: ResMut<PlayerSettings>,
 ) {
     for (mut jump_timer, mut movement_direction, mut transform) in query.iter_mut() {
         jump_timer.timer.tick(time.delta());
@@ -139,12 +140,12 @@ fn jump_system(
         match movement_direction.direction {
             Direction::Up => {
                 let force: f32 = jump_timer.timer.elapsed_secs() * 10.0;
-                let velocity = (PLAYER_SPEED - force) * 150.0;
+                let velocity = (player.speed - force) * 150.0;
                 let formula: f32 = velocity * time.delta_seconds();
                 transform.translation.y += formula;
             }
             Direction::Down => {
-                let velocity = PLAYER_SPEED * 120.0;
+                let velocity = player.speed * 120.0;
                 let formula: f32 = velocity * time.delta_seconds();
                 transform.translation.y -= formula;
             }

@@ -2,8 +2,7 @@ use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
-pub const BACKGROUND_Z: f32 = 1.0;
-pub const BASE_Z: f32 = 10.0;
+use crate::settings::background::BackgroundSettings;
 
 pub struct BackgroundPlugin;
 
@@ -31,10 +30,11 @@ fn setup(
     asset_server: Res<AssetServer>,
     mut commands: Commands,
     mut writer: EventWriter<SpawnNewGroundEvent>,
+    settings: Res<BackgroundSettings>,
 ) {
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/background-day.png"),
-        transform: Transform::from_xyz(0.0, 0.0, BACKGROUND_Z),
+        transform: Transform::from_xyz(0.0, 0.0, settings.background_z),
         sprite: Sprite {
             custom_size: Some(Vec2::new(288.0 * 2.0, 512.0 * 2.0)),
             ..default()
@@ -62,12 +62,13 @@ fn spawn_ground(
     mut commands: Commands,
     query: Query<Entity, With<Ground>>,
     asset_server: Res<AssetServer>,
+    settings: Res<BackgroundSettings>
 ) {
     commands.spawn((
         Ground,
         SpriteBundle {
             texture: asset_server.load("sprites/base.png"),
-            transform: Transform::from_xyz(-288., -412.0, BASE_Z),
+            transform: Transform::from_xyz(-288., -412.0, settings.base_z),
             sprite: Sprite {
                 custom_size: Some(Vec2::new(672.0 * 2.0, 112.0 * 2.0)),
                 anchor: Anchor::TopLeft,

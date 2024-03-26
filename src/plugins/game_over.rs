@@ -2,8 +2,7 @@ use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use crate::plugins::player::Player;
-
-pub const GAME_OVER_Z: f32 = 100.0;
+use crate::settings::game_over::GameOverSettings;
 
 pub struct GameOverPlugin;
 
@@ -22,10 +21,12 @@ impl Plugin for GameOverPlugin {
     }
 }
 
-fn game_over(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn game_over(
+    settings: Res<GameOverSettings>,
+    mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/gameover.png"),
-        transform: Transform::from_xyz(0.0, 0.0, GAME_OVER_Z),
+        transform: Transform::from_xyz(0.0, 0.0, settings.game_over_z),
         sprite: Sprite {
             custom_size: Some(Vec2::new(192.0 * 2.0, 42.0 * 2.0)),
             anchor: Anchor::Center,
