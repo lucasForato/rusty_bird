@@ -31,6 +31,7 @@ fn setup(
     mut writer: EventWriter<SpawnNewGroundEvent>,
     settings: Res<Settings>,
 ) {
+
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/background-day.png"),
         transform: Transform::from_xyz(0.0, 0.0, settings.background_z),

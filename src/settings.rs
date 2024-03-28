@@ -20,7 +20,7 @@ impl Default for Settings {
             sprite: Vec3::new(34.0, 24.0, 100.0),
             sprite_dimensions: Vec2::new(68.0, 48.0),
             game_over_z: 100.0,
-            pipe_z: 5.0,
+            pipe_z: 50.0,
         }
     }
 }

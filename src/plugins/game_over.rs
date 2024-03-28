@@ -1,8 +1,10 @@
+use crate::plugins::player::Player;
+use crate::settings::Settings;
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-use crate::plugins::player::Player;
-use crate::settings::Settings;
+
+use super::pipe::Pipe;
 
 pub struct GameOverPlugin;
 
@@ -17,13 +19,12 @@ impl Plugin for GameOverPlugin {
                 player_has_died.read().count() > 0
             }),
         )
-        .add_systems(Update, death_system);
+        .add_systems(Update, death_on_ground_system)
+        .add_systems(Update, death_on_pipe_system);
     }
 }
 
-fn game_over(
-    settings: Res<Settings>,
-    mut commands: Commands, asset_server: Res<AssetServer>) {
+fn game_over(settings: Res<Settings>, mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/gameover.png"),
         transform: Transform::from_xyz(0.0, 0.0, settings.game_over_z),
@@ -36,7 +37,7 @@ fn game_over(
     });
 }
 
-fn death_system(
+fn death_on_ground_system(
     mut commands: Commands,
     player: Query<(&Transform, Entity), With<Player>>,
     mut event: EventWriter<DeathEvent>,
@@ -46,6 +47,46 @@ fn death_system(
         if player_position.y < -390.0 {
             commands.entity(entity).despawn();
             event.send(DeathEvent);
+        }
+    }
+}
+
+fn death_on_pipe_system(
+    mut commands: Commands,
+    player: Query<(&Transform, &Sprite, Entity), With<Player>>,
+    pipe: Query<(&Transform, &Sprite), With<Pipe>>,
+    mut writer: EventWriter<DeathEvent>,
+) {
+    for (player_transform, player_sprite, entity) in player.iter() {
+        for (pipe_transform, pipe_sprite) in pipe.iter() {
+            let pipe_x_start =
+                pipe_transform.translation.x - pipe_sprite.custom_size.unwrap().x / 2.0;
+            let pipe_x_end =
+                pipe_transform.translation.x + pipe_sprite.custom_size.unwrap().x / 2.0;
+
+            let pipe_y_start =
+                pipe_transform.translation.y - pipe_sprite.custom_size.unwrap().y / 2.0;
+            let pipe_y_end =
+                pipe_transform.translation.y + pipe_sprite.custom_size.unwrap().y / 2.0;
+
+            let player_x_start =
+                player_transform.translation.x - player_sprite.custom_size.unwrap().x / 2.0;
+            let player_x_end =
+                player_transform.translation.x + player_sprite.custom_size.unwrap().x / 2.0;
+
+            let player_y_start =
+                player_transform.translation.y - player_sprite.custom_size.unwrap().y / 2.0;
+            let player_y_end =
+                player_transform.translation.y + player_sprite.custom_size.unwrap().y / 2.0;
+
+            if player_x_start < pipe_x_end
+                && player_x_end > pipe_x_start
+                && player_y_start < pipe_y_end
+                && player_y_end > pipe_y_start
+            {
+                commands.entity(entity).despawn();
+                writer.send(DeathEvent);
+            }
         }
     }
 }

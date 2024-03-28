@@ -22,7 +22,7 @@ struct SpawnTimer {
 }
 
 #[derive(Component)]
-struct Pipe;
+pub struct Pipe;
 
 impl Plugin for PipePlugin {
     fn build(&self, app: &mut App) {
