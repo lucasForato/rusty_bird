@@ -1,7 +1,9 @@
+use crate::settings::Settings;
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use rand::prelude::*;
-use crate::settings::Settings;
+
+use super::score::IncreaseScore;
 
 pub struct PipePlugin;
 
@@ -34,7 +36,7 @@ impl Plugin for PipePlugin {
                 }),
             )
             .add_systems(Update, timer_system)
-            .add_systems(Update, move_pipe)
+            .add_systems(Update, (move_pipe, pipe_reached_end_of_screen, pipe_reached_player))
             .add_event::<SpawnNewPipeEvent>();
     }
 }
@@ -129,6 +131,28 @@ fn timer_system(
                 height: get_pipe_height(),
                 surface: get_pipe_surface(),
             });
+        }
+    }
+}
+
+fn pipe_reached_end_of_screen(
+    mut commands: Commands,
+    mut pipes: Query<(Entity, &Transform), With<Pipe>>,
+) {
+    for (entity, transform) in pipes.iter_mut() {
+        if transform.translation.x < -400.0 {
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
+fn pipe_reached_player(
+    mut pipes: Query<&Transform, With<Pipe>>,
+    mut writer: EventWriter<IncreaseScore>,
+) {
+    for transform in pipes.iter_mut() {
+        if transform.translation.x < -10.0 {
+            writer.send(IncreaseScore);
         }
     }
 }

@@ -9,6 +9,7 @@ pub struct Settings {
     pub speed: f32,
     pub sprite: Vec3, 
     pub sprite_dimensions: Vec2,
+    pub score_z: f32,
 }
 
 impl Default for Settings {
@@ -21,6 +22,7 @@ impl Default for Settings {
             sprite_dimensions: Vec2::new(68.0, 48.0),
             game_over_z: 100.0,
             pipe_z: 50.0,
+            score_z: 100.0,
         }
     }
 }

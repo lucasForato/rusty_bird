@@ -7,6 +7,7 @@ use plugins::game_over::DeathEvent;
 use plugins::game_over::GameOverPlugin;
 use plugins::player::PlayerPlugin;
 use plugins::pipe::PipePlugin;
+use plugins::score::ScorePlugin;
 use settings::Settings;
 
 fn main() {
@@ -17,6 +18,7 @@ fn main() {
             PlayerPlugin,
             GameOverPlugin,
             PipePlugin,
+            ScorePlugin,
         ))
         .add_systems(Startup, setup)
         .init_resource::<Settings>()
