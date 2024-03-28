@@ -1,8 +1,7 @@
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
-
-use crate::settings::background::BackgroundSettings;
+use crate::settings::Settings;
 
 pub struct BackgroundPlugin;
 
@@ -30,7 +29,7 @@ fn setup(
     asset_server: Res<AssetServer>,
     mut commands: Commands,
     mut writer: EventWriter<SpawnNewGroundEvent>,
-    settings: Res<BackgroundSettings>,
+    settings: Res<Settings>,
 ) {
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/background-day.png"),
@@ -62,7 +61,7 @@ fn spawn_ground(
     mut commands: Commands,
     query: Query<Entity, With<Ground>>,
     asset_server: Res<AssetServer>,
-    settings: Res<BackgroundSettings>
+    settings: Res<Settings>
 ) {
     commands.spawn((
         Ground,

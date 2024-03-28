@@ -1,7 +1,7 @@
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use rand::prelude::*;
-use crate::settings::pipe::PipeSettings;
+use crate::settings::Settings;
 
 pub struct PipePlugin;
 
@@ -53,7 +53,7 @@ fn setup(mut commands: Commands, mut writer: EventWriter<SpawnNewPipeEvent>) {
 fn spawn_pipe(
     mut commands: Commands,
     mut pipe_props: EventReader<SpawnNewPipeEvent>,
-    settings: Res<PipeSettings>,
+    settings: Res<Settings>,
     asset_server: Res<AssetServer>,
 ) {
     for pipe_prop in pipe_props.read() {

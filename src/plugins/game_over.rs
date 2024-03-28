@@ -2,7 +2,7 @@ use bevy::app::Plugin;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 use crate::plugins::player::Player;
-use crate::settings::game_over::GameOverSettings;
+use crate::settings::Settings;
 
 pub struct GameOverPlugin;
 
@@ -22,7 +22,7 @@ impl Plugin for GameOverPlugin {
 }
 
 fn game_over(
-    settings: Res<GameOverSettings>,
+    settings: Res<Settings>,
     mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(SpriteBundle {
         texture: asset_server.load("sprites/gameover.png"),
