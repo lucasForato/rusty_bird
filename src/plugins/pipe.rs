@@ -26,6 +26,9 @@ struct SpawnTimer {
 #[derive(Component)]
 pub struct Pipe;
 
+#[derive(Component)]
+pub struct Scorable;
+
 impl Plugin for PipePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PreStartup, setup)
@@ -36,7 +39,10 @@ impl Plugin for PipePlugin {
                 }),
             )
             .add_systems(Update, timer_system)
-            .add_systems(Update, (move_pipe, pipe_reached_end_of_screen, pipe_reached_player))
+            .add_systems(
+                Update,
+                (move_pipe, pipe_reached_end_of_screen, pipe_reached_player),
+            )
             .add_event::<SpawnNewPipeEvent>();
     }
 }
@@ -64,6 +70,7 @@ fn spawn_pipe(
                 let pipe_height = pipe_prop.height + -732.0;
                 commands.spawn((
                     Pipe,
+                    Scorable,
                     SpriteBundle {
                         texture: asset_server.load("sprites/pipe-green.png"),
                         transform: Transform::from_xyz(400.0, pipe_height, settings.pipe_z),
@@ -79,6 +86,7 @@ fn spawn_pipe(
                 let pipe_height = pipe_prop.height + 200.0;
                 commands.spawn((
                     Pipe,
+                    Scorable,
                     SpriteBundle {
                         texture: asset_server.load("sprites/pipe-green.png"),
                         transform: Transform::from_xyz(400.0, pipe_height, settings.pipe_z),
@@ -147,12 +155,14 @@ fn pipe_reached_end_of_screen(
 }
 
 fn pipe_reached_player(
-    mut pipes: Query<&Transform, With<Pipe>>,
+    mut pipes: Query<(&Transform, Entity), With<Scorable>>,
     mut writer: EventWriter<IncreaseScore>,
+    mut commands: Commands,
 ) {
-    for transform in pipes.iter_mut() {
-        if transform.translation.x < -10.0 {
+    for (transform, entity) in pipes.iter_mut() {
+        if transform.translation.x < -20.0 {
             writer.send(IncreaseScore);
+            commands.entity(entity).remove::<Scorable>();
         }
     }
 }
