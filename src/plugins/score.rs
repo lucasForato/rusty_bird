@@ -2,6 +2,8 @@ use bevy::prelude::*;
 
 use crate::settings::Settings;
 
+use super::player::Player;
+
 pub struct ScorePlugin;
 
 #[derive(Resource)]
@@ -22,17 +24,17 @@ pub struct Numbers {
 pub struct IncreaseScore;
 
 #[derive(Component)]
-struct Ones {
+pub struct Ones {
     pub score: i32,
 }
 
 #[derive(Component)]
-struct Tens {
+pub struct Tens {
     pub score: i32,
 }
 
 #[derive(Component)]
-struct Hundreds {
+pub struct Hundreds {
     pub score: i32,
 }
 
@@ -103,6 +105,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, settings: Res<S
 }
 
 fn increase_score_system(
+    player: Query<&Player>,
     mut ones: Query<(&mut Handle<Image>, &mut Ones), Without<Tens>>,
     mut tens: Query<(&mut Handle<Image>, &mut Tens), Without<Ones>>,
     mut hundreds: Query<(&mut Handle<Image>, &mut Hundreds), (Without<Ones>, Without<Tens>)>,
@@ -110,6 +113,10 @@ fn increase_score_system(
 ) {
     let mut increase_tens = false;
     let mut increase_hundreds = false;
+
+    if player.iter().count() == 0 {
+        return;
+    }
 
     // Process ones
     for (mut handle, mut ones) in ones.iter_mut() {
