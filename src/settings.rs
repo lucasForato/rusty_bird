@@ -10,6 +10,7 @@ pub struct Settings {
     pub sprite: Vec3, 
     pub sprite_dimensions: Vec2,
     pub score_z: f32,
+    pub start_z: f32
 }
 
 impl Default for Settings {
@@ -23,6 +24,16 @@ impl Default for Settings {
             game_over_z: 100.0,
             pipe_z: 50.0,
             score_z: 100.0,
+            start_z: 100.0
         }
     }
+}
+
+
+#[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GameState {
+    #[default]
+    MainMenu,
+    Playing,
+    GameOver,
 }

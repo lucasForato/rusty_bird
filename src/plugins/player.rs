@@ -1,4 +1,4 @@
-use crate::settings::Settings;
+use crate::settings::{GameState, Settings};
 use bevy::input::keyboard::KeyboardInput;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -49,10 +49,14 @@ enum Direction {
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup).add_systems(
-            Update,
-            (animate_sprite_system, input_system, jump_system).chain(),
-        );
+        app.add_systems(Update, animate_sprite_system)
+            .add_systems(Startup, setup)
+            .add_systems(
+                Update,
+                (input_system, jump_system)
+                    .chain()
+                    .run_if(in_state(GameState::Playing)),
+            );
     }
 }
 

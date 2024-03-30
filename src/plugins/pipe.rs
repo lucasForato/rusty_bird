@@ -1,4 +1,4 @@
-use crate::settings::Settings;
+use crate::settings::{GameState, Settings};
 use bevy::app::Plugin;
 use bevy::prelude::*;
 use rand::prelude::*;
@@ -34,9 +34,11 @@ impl Plugin for PipePlugin {
         app.add_systems(PreStartup, setup)
             .add_systems(
                 Update,
-                spawn_pipe.run_if(|mut spawn_new_pipe: EventReader<SpawnNewPipeEvent>| {
-                    spawn_new_pipe.read().count() > 0
-                }),
+                spawn_pipe
+                    .run_if(|mut spawn_new_pipe: EventReader<SpawnNewPipeEvent>| {
+                        spawn_new_pipe.read().count() > 0
+                    })
+                    .run_if(in_state(GameState::Playing)),
             )
             .add_systems(Update, timer_system)
             .add_systems(

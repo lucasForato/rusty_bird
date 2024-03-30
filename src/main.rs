@@ -8,7 +8,9 @@ use plugins::game_over::GameOverPlugin;
 use plugins::player::PlayerPlugin;
 use plugins::pipe::PipePlugin;
 use plugins::score::ScorePlugin;
+use plugins::start::StartPlugin;
 use settings::Settings;
+use settings::GameState;
 
 fn main() {
     App::new()
@@ -19,9 +21,11 @@ fn main() {
             GameOverPlugin,
             PipePlugin,
             ScorePlugin,
+            StartPlugin,
         ))
         .add_systems(Startup, setup)
         .init_resource::<Settings>()
+        .init_state::<GameState>()
         .add_event::<DeathEvent>()
         .run();
 }
