@@ -5,7 +5,6 @@ use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
 use super::pipe::Pipe;
-use super::score::{Hundreds, Ones, Tens};
 
 pub struct GameOverPlugin;
 

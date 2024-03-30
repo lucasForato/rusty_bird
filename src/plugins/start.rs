@@ -20,7 +20,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, settings: Res<S
             texture: asset_server.load("sprites/message.png"),
             transform: Transform::from_xyz(0.0, 0.0, settings.start_z),
             sprite: Sprite {
-                custom_size: Some(Vec2::new(184.0 * 2.0, 152.0 * 2.0)),
+                custom_size: Some(Vec2::new(220.0 * 2.0, 190.0 * 2.0)),
                 ..default()
             },
             ..default()
